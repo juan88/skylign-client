@@ -5,14 +5,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	//"net/url"
 	"mime/multipart"
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 	"bytes"
 	//"net/http/httputil"
 )
+
+const url = "http://skylign.org/"
 
 type UploadedAlignFileResponse struct {
 	Url   string   `json:"url,omitempty"`
@@ -39,8 +41,52 @@ func (e *UploadResponseError) UnmarshalJSON(data []byte) (err error) {
 }
 
 
+func GenerateLogo(file string, params map[string]string) (err error) {
+	var b bytes.Buffer
+	var response UploadedAlignFileResponse;
+	err = UploadData(file, params, &response)
+	
+	if err == nil && response.Error == nil {
+		req, err := http.NewRequest("GET", response.Url, &b)
+	    if err != nil {
+	    	fmt.Errorf("Error while setting GET request")
+	    	log.Fatal(err)
+	        return err
+	    }
 
-func UploadData(url, file string, params map[string]string, response *UploadedAlignFileResponse) (err error) {
+	    // Don't forget to set the content type, this will contain the boundary.
+	    req.Header.Set("Accept", "image/png")
+	    req.Header.Set("Accept-Encoding", "gzip")
+	    
+	    //debug(httputil.DumpRequestOut(req, true))
+	    
+
+	    // Submit the request
+	    client := &http.Client{}
+	    res, err := client.Do(req)
+	    if err != nil {
+	    	fmt.Println("Error making request")
+	    	log.Fatal(err)
+	        return err
+	    }
+
+	    //debug(httputil.DumpResponse(res, true))
+
+	    // Check the response
+	    if res.StatusCode == http.StatusOK {
+	        data, err := ioutil.ReadAll(res.Body)
+	        res.Body.Close()
+	        ioutil.WriteFile(strings.Replace(file, ".sto", ".png", 1), data, 0666)
+
+	        return err
+	    }
+	}
+
+	return err
+}
+
+
+func UploadData(file string, params map[string]string, response *UploadedAlignFileResponse) (err error) {
     // Prepare a form that you will submit to that URL.
     var b bytes.Buffer
     w := multipart.NewWriter(&b)

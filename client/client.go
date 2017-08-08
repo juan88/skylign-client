@@ -40,47 +40,6 @@ func (e *UploadResponseError) UnmarshalJSON(data []byte) (err error) {
 
 
 
-func Hello() {
-
-	url := "http://skylign.org/"
-	
-	// Build the request
-	//req, err := http.NewRequest("GET", url, nil)
-	//if err != nil {
-	//	log.Fatal("New request failed: ", err)
-	//	return
-	//}
-
-	// For control over HTTP client headers,
-	// redirect policy, and other settings,
-	// create a Client
-	// A Client is an HTTP client
-	//client := &http.Client{}
-
-	// Send the request via a client
-	// Do sends an HTTP request and
-	// returns an HTTP response
-	//resp, err := client.Do(req)
-	//if err != nil {
-	//	log.Fatal("Error while doing request: ", err)
-	//	return
-	//}
-
-	// Callers should close resp.Body
-	// when done reading from it
-	// Defer the closing of the body
-	//defer resp.Body.Close()
-
-	var response UploadedAlignFileResponse;
-	params := map[string]string{
-		"processing": "observed",
-		"letter_height": "info_content_all",
-		"frag":	"full",
-	}
-	UploadData(url, "ADIN0.sto", params, &response)
-
-}
-
 func UploadData(url, file string, params map[string]string, response *UploadedAlignFileResponse) (err error) {
     // Prepare a form that you will submit to that URL.
     var b bytes.Buffer

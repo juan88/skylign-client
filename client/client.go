@@ -150,11 +150,3 @@ func UploadData(file string, params map[string]string, response *UploadedAlignFi
 	defer res.Body.Close()
 	return
 }
-
-func debug(data []byte, err error) {
-    if err == nil {
-        fmt.Printf("%s\n\n", data)
-    } else {
-        log.Fatalf("%s\n\n", err)
-    }
-}

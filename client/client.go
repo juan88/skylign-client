@@ -11,7 +11,6 @@ import (
 	"os"
 	"strings"
 	"bytes"
-	//"net/http/httputil"
 )
 
 const url = "http://skylign.org/"
@@ -58,9 +57,6 @@ func GenerateLogo(file string, params map[string]string) (err error) {
 	    req.Header.Set("Accept", "image/png")
 	    req.Header.Set("Accept-Encoding", "gzip")
 	    
-	    //debug(httputil.DumpRequestOut(req, true))
-	    
-
 	    // Submit the request
 	    client := &http.Client{}
 	    res, err := client.Do(req)
@@ -69,8 +65,6 @@ func GenerateLogo(file string, params map[string]string) (err error) {
 	    	log.Fatal(err)
 	        return err
 	    }
-
-	    //debug(httputil.DumpResponse(res, true))
 
 	    // Check the response
 	    if res.StatusCode == http.StatusOK {
@@ -93,18 +87,15 @@ func UploadData(file string, params map[string]string, response *UploadedAlignFi
     // Add your image file
     f, err := os.Open(file)
     if err != nil {
-        //log.Fatal(err)
         return 
     }
     defer f.Close()
 
     fw, err := w.CreateFormFile("file", file)
     if err != nil {
-        //log.Fatal(err)
         return 
     }
     if _, err = io.Copy(fw, f); err != nil {
-        //log.Fatal(err)
         return
     }
     
@@ -135,9 +126,6 @@ func UploadData(file string, params map[string]string, response *UploadedAlignFi
     req.Header.Set("Host", "skylign.org")
     req.Header.Add("Accept-Encoding", "gzip")
     
-    //debug(httputil.DumpRequestOut(req, true))
-    
-
     // Submit the request
     client := &http.Client{}
     res, err := client.Do(req)
@@ -152,27 +140,14 @@ func UploadData(file string, params map[string]string, response *UploadedAlignFi
         err = fmt.Errorf("bad status: %s", res.Status)
     }
 
-
-    //fmt.Println("Code: %s", res.Status)
-    //fmt.Println("Parseando respuesta")
-
-    //debug(httputil.DumpResponse(res, true))
-
     // Use json.Decode for reading streams of JSON data
 	if err := json.NewDecoder(res.Body).Decode(response); err != nil {
 		fmt.Errorf("Decoding error!")
 		log.Println(err)
 	}
 
-	bodyBytes, _ := ioutil.ReadAll(res.Body)
-	fmt.Println(string(bodyBytes))
-
+	ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
-
-	//body, err := ioutil.ReadAll(resp.Body)
-	//fmt.Println(response.Url)
-	//fmt.Println(response.Message)
-
 	return
 }
 
